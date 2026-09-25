@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Kaggle / Secrets
+kaggle.json
+*.pem
+*.key
+
+# Data (Ignore large dataset files but keep directory structure)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+*.npz
+*.npy
+
+# Model Binaries & Weights (Track via DVC / Git LFS or external cloud storage)
+models/*
+!models/.gitkeep
+*.keras
+*.h5
+*.tflite
+
+# OS
+.DS_Store
+Thumbs.db
+plan.md
