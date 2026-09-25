@@ -1,33 +1,57 @@
+import unittest
 import numpy as np
-from src.config import TARGET_FRAMES, NUM_FEATURES
-from src.preprocessing import normalize_frames
+from src.features import FeatureExtractor
+from src.dictionary import get_translation, SIGN_DICTIONARY
+from src.recognizer import SignRecognizer
+from src.visualizer import draw_translation_card
 
 
-def test_normalize_frames_shorter():
-    # 20 frames -> pad to 44
-    sample = np.ones((20, NUM_FEATURES))
-    res = normalize_frames(sample, target_frames=TARGET_FRAMES)
-    assert res.shape == (TARGET_FRAMES, NUM_FEATURES)
-    assert np.all(res[20:] == 0)
+class TestPipeline(unittest.TestCase):
+    def setUp(self):
+        self.extractor = FeatureExtractor()
+        self.recognizer = SignRecognizer()
 
+    def test_feature_extractor_dimensions(self):
+        landmarks_63 = np.random.rand(63).astype(np.float32)
+        feats_86 = self.extractor.extract_86_features(landmarks_63)
+        self.assertEqual(len(feats_86), 86)
+        norm_feats = self.extractor.normalize(feats_86)
+        self.assertEqual(len(norm_feats), 86)
 
-def test_normalize_frames_longer():
-    # 60 frames -> subsample to 44
-    sample = np.random.rand(60, NUM_FEATURES)
-    res = normalize_frames(sample, target_frames=TARGET_FRAMES)
-    assert res.shape == (TARGET_FRAMES, NUM_FEATURES)
+    def test_bengali_translations(self):
+        hello_info = get_translation("HELLO")
+        self.assertEqual(hello_info["bn"], "হ্যালো")
 
+        love_info = get_translation("I_LOVE_YOU")
+        self.assertEqual(love_info["bn"], "আমি তোমাকে ভালোবাসি")
 
-def test_normalize_frames_exact():
-    # 44 frames -> unchanged
-    sample = np.random.rand(TARGET_FRAMES, NUM_FEATURES)
-    res = normalize_frames(sample, target_frames=TARGET_FRAMES)
-    assert res.shape == (TARGET_FRAMES, NUM_FEATURES)
-    assert np.array_equal(res, sample)
+        letter_a = get_translation("A")
+        self.assertEqual(letter_a["bn"], "এ")
+
+    def test_recognizer_process_frame(self):
+        dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        out_frame, result = self.recognizer.process_frame(dummy_frame)
+        self.assertEqual(out_frame.shape, (480, 640, 3))
+        self.assertIn("hand_detected", result)
+        self.assertIn("sign_en", result)
+        self.assertIn("sign_bn", result)
+        self.assertIn("confidence", result)
+
+    def test_visualizer_rendering(self):
+        dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        mock_result = {
+            "hand_detected": True,
+            "sign_en": "PEACE",
+            "sign_bn": "শান্তি ও বিজয়",
+            "confidence": 0.98,
+            "accumulated_text": "HI",
+            "accumulated_bn": "হ্যালো",
+            "color": (0, 255, 128),
+        }
+        rendered = draw_translation_card(dummy_frame, mock_result)
+        self.assertEqual(rendered.shape, (480, 640, 3))
+        self.assertTrue(np.count_nonzero(rendered) > 0)
 
 
 if __name__ == "__main__":
-    test_normalize_frames_shorter()
-    test_normalize_frames_longer()
-    test_normalize_frames_exact()
-    print("All pipeline unit tests passed successfully!")
+    unittest.main()

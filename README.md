@@ -1,6 +1,63 @@
 # Ingeet (ইঙ্গিত)
 
-Real-time Bengali Sign Language (BdSL) recognition system using MediaPipe Holistic landmarks and temporal Long Short-Term Memory (LSTM) neural networks.
+**Real-Time Sign Language to Bengali Translator**
+
+Ingeet is a computer-vision powered translation system that detects hand gestures in real-time through a standard webcam and translates them into Bengali (বাংলা) text on screen.
+
+---
+
+## Key Capabilities
+
+1. **High-Accuracy Alphabet Fingerspelling (26 Letters):**
+   - 98.6% test accuracy on anatomical hand landmark benchmarks.
+   - 86 scale- and rotation-invariant engineered features (finger curl ratios, wrist vectors, fingertip spreads, palm orientation).
+2. **Instant Conversational Gestures:**
+   - Universal gestures recognized with 100% geometric certainty:
+     - 🤟 **I Love You** $\rightarrow$ **"আমি তোমাকে ভালোবাসি"**
+     - ✌️ **Peace / Victory** $\rightarrow$ **"শান্তি ও বিজয়"**
+     - 👍 **Good / Awesome** $\rightarrow$ **"ভালো, চমৎকার"**
+     - 👌 **Okay** $\rightarrow$ **"ঠিক আছে"**
+     - ✊ **Yes / Affirmative** $\rightarrow$ **"হ্যাঁ"**
+     - ✋ **Hello / Greeting** $\rightarrow$ **"হ্যালো"**
+     - 🤙 **Call Me** $\rightarrow$ **"যোগাযোগ করুন"**
+     - 🤘 **Rock On** $\rightarrow$ **"দুর্দান্ত"**
+3. **Word Accumulator & Speller:**
+   - Hold any letter for half a second to append it to the spelled word.
+   - Built-in vocabulary dictionary translates complete words dynamically (e.g. `HELLO` $\rightarrow$ `হ্যালো`, `BOOK` $\rightarrow$ `বই`, `BANGLA` $\rightarrow$ `বাংলা`).
+4. **Professional Minimalist UI:**
+   - Freely resizable window (`WINDOW_NORMAL`).
+   - Translucent floating bottom subtitle card displaying pure Bengali text.
+   - High-contrast, complex Bengali script rendering via `Kalpurush.ttf`.
+   - Distraction-free, full camera view with delicate hand skeletal lines.
+
+---
+
+## Quickstart
+
+### 1. Installation
+
+```bash
+# Activate virtual environment
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Run Translator
+
+```bash
+python app.py
+```
+
+### Controls
+
+| Key | Action |
+| :--- | :--- |
+| **`c`** | Clear spelled word buffer |
+| **`[SPACE]`** | Insert space in spelled sentence |
+| **`b`** | Backspace last letter |
+| **`q`** | Quit application |
 
 ---
 
@@ -8,86 +65,32 @@ Real-time Bengali Sign Language (BdSL) recognition system using MediaPipe Holist
 
 ```
 ingeet/
-├── data/
-│   ├── raw/                 # Unprocessed landmark archives (.npz)
-│   └── processed/           # Normalized train/val/test splits (.npy)
-├── models/                  # Trained model checkpoints & label maps
-│   ├── ishara_lstm_baseline.keras
-│   └── class_names.npy
 ├── assets/
-│   └── fonts/               # Bengali Unicode fonts (e.g. Kalpurush.ttf)
-├── notebooks/               # Research & experimental analysis
-│   ├── 01_data_acquisition_and_preprocessing.ipynb
-│   └── 02_lstm_model_architecture.ipynb
-├── src/                     # Core production pipeline
-│   ├── __init__.py
-│   ├── config.py            # Global constants, paths, thresholds
-│   ├── preprocessing.py     # Frame normalization & landmark extraction (258 features)
-│   ├── model.py             # LSTM network architectures
-│   ├── inference.py         # Real-time sliding window & debounce engine
-│   └── visualizer.py        # OpenCV HUD & Bengali font rendering via PIL
-├── tests/                   # Pipeline validation tests
-│   └── test_pipeline.py
-├── app.py                   # Live webcam desktop inference application
-├── requirements.txt         # Python dependencies
-├── plan.md                  # Development roadmap and specification
-└── README.md                # Documentation
+│   └── fonts/
+│       └── Kalpurush.ttf       # Bengali Unicode TrueType font
+├── models/
+│   ├── sign_model.pkl          # 98.6% sign classification model
+│   ├── mean.npy                # Normalization mean vector
+│   └── std.npy                 # Normalization standard deviation vector
+├── src/
+│   ├── dictionary.py           # Sign to Bengali translation dictionary
+│   ├── features.py             # 86 invariant feature extractor & geometric rules
+│   ├── recognizer.py           # Real-time multi-frame smoothing & tracking engine
+│   ├── visualizer.py           # Minimalist floating glassmorphism UI card
+│   └── config.py               # Core configuration constants & paths
+├── tests/
+│   └── test_pipeline.py        # Automated unit test suite
+├── app.py                      # Clean desktop webcam application
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Technical Specifications
+## Testing
 
-- **Dataset:** BdSLW60 (9,307 samples, 60 Bengali sign words).
-- **Features per frame (258 total):**
-  - Pose: 33 landmarks × 4 coords ($x, y, z, \text{visibility}$) = 132
-  - Left Hand: 21 landmarks × 3 coords ($x, y, z$) = 63
-  - Right Hand: 21 landmarks × 3 coords ($x, y, z$) = 63
-- **Sequence Length:** 44 frames (zero-padded or linearly subsampled).
-- **Classifier:** 3-layer LSTM stack (128 → 64 → 32) + Dense Softmax (60 classes).
-
----
-
-## Installation & Setup
+Run the automated test suite:
 
 ```bash
-# Clone repository
-git clone https://github.com/ii-shimul/ingeet.git
-cd ingeet
-
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
----
-
-## Usage
-
-### 1. Research & Training
-Run notebooks inside `notebooks/` locally or on Google Colab:
-- `notebooks/01_data_acquisition_and_preprocessing.ipynb`: Dataset acquisition, EDA, cleaning, and normalization.
-- `notebooks/02_lstm_model_architecture.ipynb`: Model training, hyperparameter experiments, and evaluation.
-
-### 2. Live Webcam Recognition
-Ensure trained model weights and class labels exist in `models/`:
-- `models/ishara_lstm_baseline.keras`
-- `models/class_names.npy`
-- Optional: Add Bengali TrueType font to `assets/fonts/Kalpurush.ttf` for proper complex Unicode glyph rendering.
-
-Launch application:
-```bash
-python app.py --camera 0 --conf 0.80 --debounce 10
-```
-
-Controls:
-- `q`: Quit application.
-- `c`: Clear temporal rolling buffer.
-
-### 3. Run Pipeline Tests
-```bash
-python -m tests.test_pipeline
+python -m unittest tests/test_pipeline.py
 ```

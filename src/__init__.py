@@ -1,3 +1,5 @@
+"""Ingeet: Real-Time Bengali Sign Language Recognition System."""
+
 import os
 import warnings
 import numpy as np
@@ -10,6 +12,4 @@ with warnings.catch_warnings():
         np.long = int
     if not hasattr(np, "ulong"):
         np.ulong = int
-
-"""Ingeet: Real-Time Bengali Sign Language Recognition System."""
 
