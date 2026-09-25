@@ -36,5 +36,79 @@ LEARNING_RATE = 1e-3
 DROPOUT_RATE = 0.2
 
 # Real-Time Inference
-CONFIDENCE_THRESHOLD = 0.80  # Minimum softmax probability to accept prediction
-DEBOUNCE_FRAMES = 10         # Consecutive stable frames required before switching word
+CONFIDENCE_THRESHOLD = 0.35  # Realistic threshold for 60-class Softmax distribution
+DEBOUNCE_FRAMES = 5          # 5 consecutive stable frames (~160ms) before confirming word
+
+# 60 Word Vocabulary from BdSLW60
+CLASS_NAMES_LIST = [
+    "aam", "aaple", "ac", "aids", "alu", "anaros", "angur", "apartment", "attio", "audio cassette",
+    "ayna", "baandej", "baat", "baba", "balti", "balu", "bhai", "biscuts", "bon", "boroi",
+    "bottam", "bou", "cake", "capsule", "cha", "chacha", "chachi", "chadar", "chal", "chikissha",
+    "chini", "chips", "chiruni", "chocolate", "chokh utha", "chosma", "churi", "clip", "cream", "dada",
+    "dadi", "daeitto", "dal", "debor", "denadar", "dengue", "doctor", "dongson", "dulavai", "durbol",
+    "jomoj", "juta", "konna", "maa", "tattha", "toothpaste", "tshirt", "tubelight", "tupi", "tv"
+]
+
+# Bengali Script Translation Map for Unicode Rendering
+BENGALI_LABEL_MAP = {
+    "aam": "আম",
+    "aaple": "আপেল",
+    "ac": "এসি",
+    "aids": "এইডস",
+    "alu": "আলু",
+    "anaros": "আনারস",
+    "angur": "আঙুর",
+    "apartment": "অ্যাপার্টমেন্ট",
+    "attio": "আত্মীয়",
+    "audio cassette": "অডিও ক্যাসেট",
+    "ayna": "আয়না",
+    "baandej": "ব্যান্ডেজ",
+    "baat": "ভাত",
+    "baba": "বাবা",
+    "balti": "বালতি",
+    "balu": "বালু",
+    "bhai": "ভাই",
+    "biscuts": "বিস্কুট",
+    "bon": "বোন",
+    "boroi": "বরই",
+    "bottam": "বোতাম",
+    "bou": "বউ",
+    "cake": "কেক",
+    "capsule": "ক্যাপসুল",
+    "cha": "চা",
+    "chacha": "চাচা",
+    "chachi": "চাচী",
+    "chadar": "চাদর",
+    "chal": "চাল",
+    "chikissha": "চিকিৎসা",
+    "chini": "চিনি",
+    "chips": "চিপস",
+    "chiruni": "চিরুনি",
+    "chocolate": "চকলেট",
+    "chokh utha": "চোখ ওঠা",
+    "chosma": "চশমা",
+    "churi": "চুরি",
+    "clip": "ক্লিপ",
+    "cream": "ক্রিম",
+    "dada": "দাদা",
+    "dadi": "দাদী",
+    "daeitto": "দায়িত্ব",
+    "dal": "ডাল",
+    "debor": "দেবর",
+    "denadar": "দেনাদার",
+    "dengue": "ডেঙ্গু",
+    "doctor": "ডাক্তার",
+    "dongson": "দংশন",
+    "dulavai": "দুলাভাই",
+    "durbol": "দুর্বল",
+    "jomoj": "জমজ",
+    "juta": "জুতা",
+    "konna": "কন্যা",
+    "maa": "মা",
+    "tattha": "তথ্য",
+    "toothpaste": "টুথপেস্ট",
+    "tshirt": "টি-শার্ট",
+    "tubelight": "টিউবলাইট",
+    "tupi": "টুপি",
+    "tv": "টিভি",
+}
